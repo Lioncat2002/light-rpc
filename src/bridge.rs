@@ -177,6 +177,8 @@ impl LightBridge {
                 .unwrap()
         }
     }
+
+    async fn websocket_route() {}
 }
 
 #[cfg(test)]

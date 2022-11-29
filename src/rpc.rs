@@ -23,12 +23,20 @@ pub enum RpcMethod {
     Other,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum WebSocketMethod {}
+
 /// According to <https://www.jsonrpc.org/specification#overview>
 #[derive(Debug, Deserialize, Serialize)]
 pub struct JsonRpcReq {
     pub method: RpcMethod,
     #[serde(default)]
     pub params: serde_json::Value,
+}
+
+pub struct WebSocketReq {
+    pub method: WebSocketMethod,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
