@@ -15,28 +15,33 @@ pub struct ConfirmTransactionParams(pub String, #[serde(default)] pub Commitment
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum WebSocketMethod {
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct WebSocketReq {
+    pub method: WebSocketMethod,
+    #[serde(default)]
+    pub params: serde_json::Value,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum WebSocketRes {
+    Raw{ status:u16,body:String},
+    Err(serde_json::Value),
+    Ok(serde_json::Value),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum RpcMethod {
     SendTransaction,
     ConfirmTransaction,
     GetVersion,
     #[serde(other)]
     Other,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum WebSocketMethod {}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct WebSocketReq {
-    pub method: WebSocketMethod,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub enum WebSocketRes {
-    Raw,
-    Ok,
-    Err,
 }
 
 /// According to <https://www.jsonrpc.org/specification#overview>

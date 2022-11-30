@@ -2,10 +2,12 @@ use crate::configs::SendTransactionConfig;
 use crate::encoding::BinaryEncoding;
 use crate::rpc::{
     ConfirmTransactionParams, JsonRpcError, JsonRpcReq, JsonRpcRes, RpcMethod,
-    SendTransactionParams, WebSocketRes,
+    SendTransactionParams, WebSocketMethod, WebSocketReq, WebSocketRes,
 };
 use actix_web::{web, App, HttpServer, Responder};
 
+use awc::Client;
+use futures::{SinkExt, StreamExt};
 use reqwest::Url;
 use solana_client::rpc_client::RpcClient;
 
@@ -178,7 +180,31 @@ impl LightBridge {
         }
     }
 
-    async fn websocket_route(body: bytes::Bytes, state: web::Data<Arc<LightBridge>>)->WebSocketRes {}
+    async fn websocket_route(
+        body: bytes::Bytes,
+        state: web::Data<Arc<LightBridge>>,
+    ) -> WebSocketRes {
+        let websocket_req = serde_json::from_slice::<WebSocketReq>(&body).unwrap();
+        if let WebSocketMethod::Other = websocket_req.method {
+            let (_, mut connection) = Client::default()
+                .ws("ws://localhost:8900")
+                .connect()
+                .await
+                .unwrap();
+            
+            connection.send(awc::ws::Message::Binary(body)).await.unwrap();
+
+            WebSocketRes::Raw {
+                status:,
+                body: connection.next().await.unwrap().unwrap(),
+            }
+        } else {
+            WebSocketRes::Raw {
+                status: 200,
+                body: "hello".to_string(),
+            }
+        }
+    }
 }
 
 #[cfg(test)]
