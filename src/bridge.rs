@@ -2,7 +2,7 @@ use crate::configs::SendTransactionConfig;
 use crate::encoding::BinaryEncoding;
 use crate::rpc::{
     ConfirmTransactionParams, JsonRpcError, JsonRpcReq, JsonRpcRes, RpcMethod,
-    SendTransactionParams,
+    SendTransactionParams, WebSocketRes,
 };
 use actix_web::{web, App, HttpServer, Responder};
 
@@ -178,7 +178,7 @@ impl LightBridge {
         }
     }
 
-    async fn websocket_route() {}
+    async fn websocket_route(body: bytes::Bytes, state: web::Data<Arc<LightBridge>>)->WebSocketRes {}
 }
 
 #[cfg(test)]
